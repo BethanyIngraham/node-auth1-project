@@ -1,10 +1,11 @@
 // Require the `restricted` middleware from `auth-middleware.js`. You will need it here!
 const express = require('express');
 const Users = require('./users-model');
+const {restricted} = require('../auth/auth-middleware');
 
 const router = express.Router();
 
-router.get('/', async (req, res, next) => {
+router.get('/',restricted, async (req, res, next) => {
   try {
     const users = await Users.find();
     res.json(users);
@@ -17,7 +18,7 @@ router.use((err, req, res, next) => { // eslint-disable-line
   res.status(err.status || 500).json({
     message: err.message || 'Something went wrong with the server',
     stack: err.stack
-  })
+  });
 });
 
 /**
