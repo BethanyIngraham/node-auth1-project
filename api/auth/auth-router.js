@@ -45,7 +45,7 @@ router.post('/register',
       username: username,
       password: hash
     };
-    
+
     const newUser = await Users.add(user);
     res.status(201).json(newUser);
   } catch(err) {
@@ -69,7 +69,22 @@ router.post('/register',
   }
  */
 router.post('/login', checkUsernameExists, (req, res, next) => {
-  res.json('logging in user');
+  try {
+    const {password} = req.body;
+    if(bcrypt.compareSync(password, req.user.password)) {
+      req.session.user = req.user
+      res.json({
+        message: `Welcome ${req.user.username}!`
+      })
+    } else {
+      next({
+        status: 401,
+        message: 'Invalid credentials'
+      })
+    }
+  } catch(err) {
+    next(err);
+  }
 });
 
 /**
